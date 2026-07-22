@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://attendpay.app/sitemap.xml
+Sitemap: https://attendpay.onrender.com/sitemap.xml
