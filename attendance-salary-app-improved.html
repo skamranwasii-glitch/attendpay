@@ -52,10 +52,10 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <!--
   GOOGLE ADSENSE — publisher ID ca-pub-9448625518094711 is already active above.
-  Once you create an ad unit in your AdSense dashboard, find the adGate section
-  further down (search for "ADSENSE AD UNIT GOES HERE"), replace the placeholder
-  ad div with your actual ad unit markup, and add a matching
-  (adsbygoogle = window.adsbygoogle || []).push({}); call.
+  Note: this app screen is a functional tool (upload/edit/export), so per AdSense
+  policy no ad units should be placed directly on it. Place display ad units only
+  on the content pages (index.html, product.html) alongside real written content —
+  not here, and never behind a forced "watch this ad to continue" gate.
 -->
 
 <style>
@@ -369,24 +369,6 @@
   </div>
 </div>
 
-<!-- AD GATE (shown once per session to free-tier users before the app unlocks) -->
-<div class="ad-overlay no-print" id="adGate" style="display:none;">
-  <div class="ad-box">
-    <span class="ad-eyebrow">Free Access</span>
-    <h2>Please watch this short ad to continue</h2>
-    <p class="hint">AttendPay is free to use. This ad supports the tool — thanks for your patience.</p>
-
-    <!-- ADSENSE AD UNIT GOES HERE: replace this placeholder div with your real
-         AdSense ad unit markup once AdSense is approved, and call
-         (adsbygoogle = window.adsbygoogle || []).push({}); after it renders. -->
-    <div id="adSlotContainer">Ad space<br>(connect your Google AdSense ad unit here)</div>
-
-    <button class="btn-primary" id="adContinueBtn" disabled>Continue to App (15)</button>
-    <div class="ad-countdown" id="adCountdownText"></div>
-    <span class="ad-pro-link" id="adProLink">Have a Pro code? Skip ads</span>
-  </div>
-</div>
-
 <div class="wrap" id="appMain" style="display:none;">
 
   <div class="user-bar no-print">
@@ -614,13 +596,7 @@
 const appMainEl = document.getElementById('appMain');
 
 function enterApp(){
-  const isPro = localStorage.getItem('ats_pro_unlocked') === 'true';
-  const adWatchedThisSession = sessionStorage.getItem('ats_ad_watched_session') === 'true';
-  if (isPro || adWatchedThisSession){
-    appMainEl.style.display = 'block';
-  } else {
-    showAdGate();
-  }
+  appMainEl.style.display = 'block';
 }
 
 // ================= DEMO VIDEO (shown first, always skippable) =================
@@ -651,56 +627,18 @@ function startDemoOrEnter(){
   }
 }
 
-// ================= AD GATE (free tier) =================
-const adGateEl = document.getElementById('adGate');
-const adContinueBtn = document.getElementById('adContinueBtn');
-const adCountdownText = document.getElementById('adCountdownText');
-const adProLink = document.getElementById('adProLink');
-let adCountdownTimer = null;
-
-function showAdGate(){
-  adGateEl.style.display = 'flex';
-  appMainEl.style.display = 'none';
-  let secondsLeft = 15;
-  adContinueBtn.disabled = true;
-  adContinueBtn.textContent = `Continue to App (${secondsLeft})`;
-  adCountdownText.textContent = 'Please wait for the ad to finish...';
-  if (adCountdownTimer) clearInterval(adCountdownTimer);
-  adCountdownTimer = setInterval(() => {
-    secondsLeft--;
-    if (secondsLeft <= 0){
-      clearInterval(adCountdownTimer);
-      adContinueBtn.disabled = false;
-      adContinueBtn.textContent = 'Continue to App';
-      adCountdownText.textContent = 'Thanks! You can continue now.';
-    } else {
-      adContinueBtn.textContent = `Continue to App (${secondsLeft})`;
-    }
-  }, 1000);
-}
-
-adContinueBtn.addEventListener('click', () => {
-  if (adContinueBtn.disabled) return;
-  sessionStorage.setItem('ats_ad_watched_session', 'true');
-  adGateEl.style.display = 'none';
-  appMainEl.style.display = 'block';
-});
-
 // Stub for a future paid "Pro" tier — once you have a real payment backend,
 // replace this prompt with an actual license/subscription check.
-adProLink.addEventListener('click', () => {
+// (Kept as a no-op placeholder; not wired to any UI element right now.)
+function redeemProCodeStub(){
   const code = prompt('Enter your Pro unlock code:');
   if (!code) return;
   if (code.trim().toUpperCase() === 'PRO-DEMO'){
     localStorage.setItem('ats_pro_unlocked', 'true');
-    if (adCountdownTimer) clearInterval(adCountdownTimer);
-    adGateEl.style.display = 'none';
-    appMainEl.style.display = 'block';
   } else {
     alert('Invalid code.');
   }
-});
-// ================= END AD GATE =================
+}
 
 startDemoOrEnter();
 
